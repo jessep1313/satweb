@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crear Administrador{% endblock %}
+{% block content_title %}Nuevo Administrador{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'listado_admins' %}">Listado de Admins</a></li>
+<li class="breadcrumb-item active">Crear Admin</li>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Registrar nuevo administrador</h3>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre completo</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" 
+                       value="{{ form_data.nombre|default:'' }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="username" class="form-label">Usuario (login)</label>
+                <input type="text" class="form-control" id="username" name="username" 
+                       value="{{ form_data.username|default:'' }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" 
+                       value="{{ form_data.email|default:'' }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="empresa" class="form-label">Empresa</label>
+                <select class="form-control" id="empresa" name="empresa" required>
+                    <option value="">Selecciona una empresa</option>
+                    <option value="empresa1" {% if form_data.empresa == 'empresa1' %}selected{% endif %}>Empresa 1</option>
+                    <option value="empresa2" {% if form_data.empresa == 'empresa2' %}selected{% endif %}>Empresa 2</option>
+                    <option value="empresa3" {% if form_data.empresa == 'empresa3' %}selected{% endif %}>Empresa 3</option>
+                    <option value="empresa4" {% if form_data.empresa == 'empresa4' %}selected{% endif %}>Empresa 4</option>
+                    <option value="empresa5" {% if form_data.empresa == 'empresa5' %}selected{% endif %}>Empresa 5</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="{% url 'listado_admins' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

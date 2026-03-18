@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Empresa{% endblock %}
+{% block content_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Bienvenido</h3>
+            </div>
+            <div class="card-body">
+                <h5>Hola, {{ user.get_full_name|default:user.username }}</h5>
+                <p class="mb-0">Has iniciado sesión como <strong>usuario Empresa</strong>.</p>
+                <p class="text-muted">Este es el panel de control donde podrás administrar las empresas y sus administradores.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

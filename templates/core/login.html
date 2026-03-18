@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="{% static 'adminlte/dist/css/adminlte.min.css' %}">
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+    <div class="login-logo">
+        <b>Plataforma Fiscal</b>
+    </div>
+    <div class="card">
+        <div class="card-body login-card-body">
+            <p class="login-box-msg">Inicia sesión para acceder</p>
+           <form method="post">
+                {% csrf_token %}
+                <div class="input-group mb-3">
+                    <input type="text" name="username" class="form-control" placeholder="Usuario" required>
+                    <div class="input-group-text"><span class="bi bi-person"></span></div>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
+                    <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
+                </div>
+                <div class="input-group mb-3">
+                    <select name="empresa" class="form-control">
+                        <option value="">—— Selecciona empresa ——</option>
+                        <option value="empresa1">Empresa 1</option>
+                        <option value="empresa2">Empresa 2</option>
+                        <option value="empresa3">Empresa 3</option>
+                        <option value="empresa4">Empresa 4</option>
+                        <option value="empresa5">Empresa 5</option>
+                    </select>
+                    <div class="input-group-text"><span class="bi bi-building"></span></div>
+                </div>
+                <button type="submit" class="btn btn-primary">Ingresar</button>
+            </form>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} mt-3">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script src="{% static 'adminlte/plugins/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
