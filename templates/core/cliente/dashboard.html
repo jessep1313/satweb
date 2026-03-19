@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Cliente{% endblock %}
+{% block content_title %}Panel de Cliente{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Dashboard</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Bienvenido</h3>
+            </div>
+            <div class="card-body">
+                <h5>Hola, {{ request.session.user_nombre }}</h5>
+                <p class="mb-0">Has iniciado sesión como <strong>Cliente</strong> de la empresa <strong>{{ request.session.empresa_db }}</strong>.</p>
+                <p class="text-muted">Desde aquí puedes acceder a los módulos fiscales.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

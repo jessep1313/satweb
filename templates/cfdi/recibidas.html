@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}CFDI Recibidas{% endblock %}
+{% block content_title %}Facturas Recibidas{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'cliente_dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item active">CFDI Recibidas</li>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Listado de CFDI</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>UUID</th>
+                    <th>Emisor</th>
+                    <th>RFC Emisor</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cfdi in cfdis %}
+                <tr>
+                    <td>{{ cfdi.uuid }}</td>
+                    <td>{{ cfdi.nombre_emisor }}</td>
+                    <td>{{ cfdi.rfc_emisor }}</td>
+                    <td>{{ cfdi.fecha_emision|date:"d/m/Y H:i" }}</td>
+                    <td>${{ cfdi.total|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No hay CFDI registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

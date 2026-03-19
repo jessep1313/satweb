@@ -23,7 +23,6 @@
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Usuario</th>
                     <th>Nombre</th>
                     <th>Correo</th>
@@ -34,7 +33,6 @@
             <tbody>
                 {% for cliente in clientes %}
                 <tr>
-                    <td>{{ cliente.use_id }}</td>
                     <td>{{ cliente.use_login }}</td>
                     <td>{{ cliente.use_nombre }}</td>
                     <td>{{ cliente.use_email }}</td>

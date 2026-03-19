@@ -14,4 +14,7 @@ urlpatterns = [
     path('panel-admin/clientes/crear/', views.crear_cliente, name='crear_cliente'),
     path('panel-admin/clientes/eliminar/', views.eliminar_cliente, name='eliminar_cliente'),
 
+    path('cliente-dashboard/', views.cliente_dashboard, name='cliente_dashboard'),
+
+
 ]

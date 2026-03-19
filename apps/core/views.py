@@ -220,3 +220,9 @@ def eliminar_cliente(request):
             messages.error(request, f'Error al eliminar: {e}')
     
     return redirect('listado_clientes')
+
+
+@cliente_required
+def cliente_dashboard(request):
+    """Dashboard del usuario Cliente"""
+    return render(request, 'core/cliente/dashboard.html')

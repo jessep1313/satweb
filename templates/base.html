@@ -119,6 +119,132 @@
                             </ul>
                         </li>
                         {% endif %}
+
+                        {% if user_type == 'tenant' and request.session.user_tipo == 'Cliente' %}
+                            <!-- Menú para Cliente -->
+                            <li class="nav-item">
+                                <a href="{% url 'cliente_dashboard' %}" class="nav-link">
+                                    <i class="nav-icon bi bi-speedometer2"></i>
+                                    <p>Dashboard</p>
+                                </a>
+                            </li>
+                            <!-- CFDI -->
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon bi bi-file-earmark-text"></i>
+                                    <p>
+                                        Facturas CFDI
+                                        <i class="nav-arrow bi bi-chevron-right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">  <!-- temporalmente sin URL -->
+                                            <i class="nav-icon bi bi-circle"></i>
+                                            <p>Recibidas</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- Proveedores -->
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon bi bi-people"></i>
+                                    <p>
+                                        Proveedores
+                                        <i class="nav-arrow bi bi-chevron-right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon bi bi-circle"></i>
+                                            <p>Proveedores</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon bi bi-circle"></i>
+                                            <p>Proveedores sin CFDI</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- Expediente -->
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon bi bi-folder"></i>
+                                    <p>
+                                        Expediente
+                                        <i class="nav-arrow bi bi-chevron-right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon bi bi-circle"></i>
+                                            <p>Opiniones de Cumplimiento</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- Listas Negras -->
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon bi bi-exclamation-triangle"></i>
+                                    <p>
+                                        Listas Negras SAT
+                                        <i class="nav-arrow bi bi-chevron-right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon bi bi-circle"></i>
+                                            <p>Artículo 69</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon bi bi-circle"></i>
+                                            <p>Artículo 69-B</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- Configuración -->
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon bi bi-gear"></i>
+                                    <p>
+                                        Configuración
+                                        <i class="nav-arrow bi bi-chevron-right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon bi bi-key"></i>
+                                            <p>Carga FIEL</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon bi bi-envelope"></i>
+                                            <p>Configuración de correos</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon bi bi-person-plus"></i>
+                                            <p>Creación de usuarios</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endif %}
+
+
                     </ul>
                 </nav>
             </div>
