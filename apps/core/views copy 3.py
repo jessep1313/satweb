@@ -30,7 +30,6 @@ def login_view(request):
                         request.session['user_login'] = user.use_login
                         request.session['user_tipo'] = user.use_tipo
                         request.session['user_nombre'] = user.use_nombre
-                        request.session['user_rfc'] = user.use_rfc
                         # Redirigir según el tipo
                         if user.use_tipo == 'Admin':
                             return redirect('admin_dashboard')
@@ -178,28 +177,17 @@ def listado_clientes(request):
 
 
 @admin_required
-def crear_cliente(request):
+def crear_cliente(request):    
     empresa_db = request.session.get('empresa_db')
-    if not empresa_db:
-        messages.error(request, 'No se ha seleccionado una empresa')
-        return redirect('login')
-
+    
     if request.method == 'POST':
         use_login = request.POST.get('username')
         password = request.POST.get('password')
         use_nombre = request.POST.get('nombre')
         use_email = request.POST.get('email')
         use_rfc = request.POST.get('rfc', '')
-
-        if not use_rfc:
-            messages.error(request, 'El RFC es obligatorio para crear las tablas del cliente.')
-            return render(request, 'core/admin/crear_cliente.html')
-
+        
         try:
-            # 1. Crear las tablas específicas (solo si no existen)
-            crear_tablas_cliente(empresa_db, use_rfc)
-
-            # 2. Crear el usuario en la tabla 'users'
             Usuario.objects.db_manager(empresa_db).create_user(
                 use_login=use_login,
                 password=password,
@@ -208,13 +196,11 @@ def crear_cliente(request):
                 use_rfc=use_rfc,
                 use_tipo='Cliente'
             )
-            messages.success(request, 'Cliente creado correctamente con sus tablas asociadas.')
+            messages.success(request, 'Cliente creado correctamente')
             return redirect('listado_clientes')
-
         except Exception as e:
-            messages.error(request, f'Error al crear el cliente: {e}')
-            return render(request, 'core/admin/crear_cliente.html')
-
+            messages.error(request, f'Error al crear cliente: {e}')
+    
     return render(request, 'core/admin/crear_cliente.html')
 
 

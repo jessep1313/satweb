@@ -35,8 +35,9 @@
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
             <div class="mb-3">
-                <label for="rfc" class="form-label">RFC (opcional)</label>
-                <input type="text" class="form-control" id="rfc" name="rfc">
+                <label for="rfc" class="form-label">RFC</label>
+                <input type="text" class="form-control" id="rfc" name="rfc" maxlength="13" required>
+                <small class="text-muted">El RFC se usará para crear tablas específicas del cliente.</small>
             </div>
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">Guardar</button>

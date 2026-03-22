@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.usuarios_empresa',
     'apps.usuarios_tenant',
+    'apps.fiel',
 ]
 
 MIDDLEWARE = [

@@ -2,3 +2,4 @@
 Django==4.2.16  # Framework web principal
 mysqlclient==2.2.4  # Conector MySQL/MariaDB para Django
 django-environ==0.11.2  # Manejo de variables de entorno desde .env
+satcfdi==?   # O la versión que corresponda

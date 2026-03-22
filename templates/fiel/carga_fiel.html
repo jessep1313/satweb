@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Carga FIEL{% endblock %}
+{% block content_title %}Carga de Archivos FIEL{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'cliente_dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item active">Carga FIEL</li>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Subir archivos FIEL</h3>
+    </div>
+    <div class="card-body">
+        {% if carga_existente %}
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i> Ya existe una carga FIEL para este RFC.
+                No se permite subir otra. Si necesitas actualizar, elimina la carga existente primero.
+            </div>
+        {% else %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Subir</button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h3 class="card-title">Carga actual</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Archivo CER</th>
+                    <th>Archivo KEY</th>
+                    <th>Fecha carga</th>
+                    <th>Estatus</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for carga in cargas %}
+                <tr>
+                    <td>
+                    
+                        <a href="{% url 'fiel:descargar_archivo' carga.id 'cer' %}">
+                           <i class="bi bi-file-earmark"></i>
+                        </a>
+                    </td>
+                    <td>
+                    
+                        <a href="{% url 'fiel:descargar_archivo' carga.id 'key' %}">
+                           <i class="bi bi-file-earmark"></i>
+                        </a>
+                    </td>
+                    <td>{{ carga.fecha_carga|date:"d/m/Y H:i" }}</td>
+                    <td>{{ carga.get_estatus_display }}</td>
+                    <td>
+                        <!-- Botón Validar (por ahora deshabilitado) -->
+                        <a href="{% url 'fiel:validar_fiel' carga.id %}" class="btn btn-sm btn-info">
+                            Validar
+                        </a>
+                        <!-- Botón Eliminar -->
+                        <form method="post" action="{% url 'fiel:eliminar_carga' carga.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta carga FIEL? Se perderán los archivos y la configuración.')">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No hay registros de carga FIEL.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
