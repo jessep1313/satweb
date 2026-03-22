@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crear Empleado{% endblock %}
+{% block content_title %}Nuevo Empleado{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'cliente_dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'fiel:listado_empleados' %}">Empleados</a></li>
+<li class="breadcrumb-item active">Nuevo</li>
+{% endblock %}
+
+{% block content %}
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <h3 class="card-title">Datos del nuevo empleado</h3>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="username" class="form-label">Usuario (login)</label>
+                <input type="text" name="username" id="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre completo</label>
+                <input type="text" name="nombre" id="nombre" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" name="email" id="email" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" name="password" id="password" class="form-control" required>
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="{% url 'fiel:listado_empleados' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

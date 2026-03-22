@@ -11,4 +11,8 @@ urlpatterns = [
     path('config-correos/crear/', views.crear_config_correo, name='crear_config_correo'),
     path('config-correos/eliminar/<int:config_id>/', views.eliminar_config_correo, name='eliminar_config_correo'),
     path('config-correos/editar/<int:config_id>/', views.editar_config_correo, name='editar_config_correo'),
+
+    path('empleados/', views.listado_empleados, name='listado_empleados'),
+    path('empleados/crear/', views.crear_empleado, name='crear_empleado'),
+    path('empleados/eliminar/<int:empleado_id>/', views.eliminar_empleado, name='eliminar_empleado'),
 ]

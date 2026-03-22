@@ -20,6 +20,8 @@ def login_view(request):
                 # Autenticación manual contra la base de datos de la empresa
                 try:
                     user = Usuario.objects.using(empresa).get(use_login=username)
+                   
+
                     if not user.is_active:
                         messages.error(request, 'Usuario inactivo')
                     elif user.check_password(password):

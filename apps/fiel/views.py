@@ -307,3 +307,72 @@ def editar_config_correo(request, config_id):
         'config': config,
         'tipos': ConfiguracionCorreo.TIPOS
     })
+
+
+@cliente_required
+def listado_empleados(request):
+    empresa_db = request.session.get('empresa_db')
+    rfc_cliente = request.session.get('user_rfc')
+    if not empresa_db or not rfc_cliente:
+        messages.error(request, 'No se pudo identificar al cliente.')
+        return redirect('cliente_dashboard')
+
+    empleados = Usuario.objects.db_manager(empresa_db).filter(
+        use_tipo='Empleado'
+    ).values('use_id', 'use_login', 'use_nombre', 'use_email', 'use_rfc')
+    return render(request, 'fiel/listado_empleados.html', {'empleados': empleados})
+
+
+@cliente_required
+def crear_empleado(request):
+    empresa_db = request.session.get('empresa_db')
+    rfc_cliente = request.session.get('user_rfc')   # RFC del cliente que está creando
+    if not empresa_db or not rfc_cliente:
+        messages.error(request, 'No se pudo identificar al cliente.')
+        return redirect('cliente_dashboard')
+
+    if request.method == 'POST':
+        use_login = request.POST.get('username')
+        password = request.POST.get('password')
+        use_nombre = request.POST.get('nombre')
+        use_email = request.POST.get('email')
+
+        if not use_login or not password or not use_nombre or not use_email:
+            messages.error(request, 'Todos los campos son obligatorios.')
+            return render(request, 'fiel/crear_empleado.html')
+
+        # Verificar si el usuario ya existe
+        exists = Usuario.objects.db_manager(empresa_db).filter(use_login=use_login).exists()
+        if exists:
+            messages.error(request, 'El nombre de usuario ya existe.')
+            return render(request, 'fiel/crear_empleado.html')
+
+        # Crear empleado con el RFC del cliente
+        Usuario.objects.db_manager(empresa_db).create_user(
+            use_login=use_login,
+            password=password,
+            use_nombre=use_nombre,
+            use_email=use_email,
+            use_rfc=rfc_cliente,               # <-- Aquí se asigna automáticamente
+            use_tipo='Empleado'
+        )
+        messages.success(request, 'Empleado creado correctamente.')
+        return redirect('fiel:listado_empleados')
+
+    return render(request, 'fiel/crear_empleado.html')
+
+@cliente_required
+def eliminar_empleado(request, empleado_id):
+    empresa_db = request.session.get('empresa_db')
+    rfc_cliente = request.session.get('user_rfc')
+    if not empresa_db or not rfc_cliente:
+        messages.error(request, 'No se pudo identificar al cliente.')
+        return redirect('cliente_dashboard')
+
+    try:
+        empleado = Usuario.objects.db_manager(empresa_db).get(use_id=empleado_id, use_tipo='Empleado')
+        empleado.delete(using=empresa_db)
+        messages.success(request, 'Empleado eliminado correctamente.')
+    except Usuario.DoesNotExist:
+        messages.error(request, 'Empleado no encontrado.')
+    return redirect('fiel:listado_empleados')

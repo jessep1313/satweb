@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Usuarios Empleados{% endblock %}
+{% block content_title %}Listado de Empleados{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'cliente_dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item active">Empleados</li>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Empleados registrados</h3>
+        <div class="card-tools">
+            <a href="{% url 'fiel:crear_empleado' %}" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-circle"></i> Nuevo empleado
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                 <tr>
+                    <th>Usuario</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>RFC</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emp in empleados %}
+                <tr>
+                    <td>{{ emp.use_login }}</td>
+                    <td>{{ emp.use_nombre }}</td>
+                    <td>{{ emp.use_email }}</td>
+                    <td>{{ emp.use_rfc|default:"-" }}</td>
+                    <td>
+                        <form method="post" action="{% url 'fiel:eliminar_empleado' emp.use_id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este empleado?')">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No hay empleados registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

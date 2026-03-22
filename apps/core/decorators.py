@@ -74,7 +74,7 @@ def cliente_required(view_func):
     """Decorador para vistas que solo pueden acceder clientes"""
     @wraps(view_func)
     def _wrapped(request, *args, **kwargs):
-        if request.session.get('user_type') != 'tenant' or request.session.get('user_tipo') != 'Cliente':
+        if request.session.get('user_type') != 'tenant' or request.session.get('user_tipo') not in ('Cliente', 'Empleado'):
             messages.error(request, 'No tienes permiso para acceder a esta página')
             return redirect('login')
         return view_func(request, *args, **kwargs)
