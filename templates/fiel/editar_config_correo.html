@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Configuración de Correo{% endblock %}
+{% block content_title %}Editar Configuración{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'cliente_dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'fiel:config_correos' %}">Configuración de Correos</a></li>
+<li class="breadcrumb-item active">Editar</li>
+{% endblock %}
+
+{% block content %}
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <h3 class="card-title">Editar configuración de correo</h3>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="tipo" class="form-label">Tipo</label>
+                <select name="tipo" id="tipo" class="form-select" required>
+                    <option value="">Selecciona un tipo</option>
+                    {% for key, value in tipos %}
+                    <option value="{{ key }}" {% if config.tipo == key %}selected{% endif %}>{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="titulo" class="form-label">Título</label>
+                <input type="text" name="titulo" id="titulo" class="form-control" value="{{ config.titulo }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="cuerpo" class="form-label">Cuerpo</label>
+                <textarea name="cuerpo" id="cuerpo" class="form-control" rows="5" required>{{ config.cuerpo }}</textarea>
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                <a href="{% url 'fiel:config_correos' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

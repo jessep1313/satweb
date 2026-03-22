@@ -185,3 +185,125 @@ def validar_fiel(request, carga_id):
         messages.error(request, f'FIEL inválida: {str(e)}')
 
     return redirect('fiel:carga_fiel')
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied
+from .models import ConfiguracionCorreo
+from .forms import ConfiguracionCorreoForm
+
+from .models import ConfiguracionCorreo
+
+@cliente_required
+def config_correos(request):
+    empresa_db = request.session.get('empresa_db')
+    rfc_cliente = request.session.get('user_rfc')
+    if not empresa_db or not rfc_cliente:
+        messages.error(request, 'No se pudo identificar al cliente.')
+        return redirect('cliente_dashboard')
+
+    configs = ConfiguracionCorreo.objects.db_manager(empresa_db).filter(
+        rfc_cliente=rfc_cliente
+    ).order_by('tipo', 'created_at')
+
+    return render(request, 'fiel/config_correos.html', {
+        'configs': configs,
+        'tipos': ConfiguracionCorreo.TIPOS
+    })
+
+
+from .forms import ConfiguracionCorreoForm
+
+@cliente_required
+def crear_config_correo(request):
+    empresa_db = request.session.get('empresa_db')
+    rfc_cliente = request.session.get('user_rfc')
+    if not empresa_db or not rfc_cliente:
+        messages.error(request, 'No se pudo identificar al cliente.')
+        return redirect('cliente_dashboard')
+
+    if request.method == 'POST':
+        form = ConfiguracionCorreoForm(request.POST)
+        if form.is_valid():
+            tipo = form.cleaned_data['tipo']
+            # Verificar si ya existe una configuración de este tipo para este RFC
+            exists = ConfiguracionCorreo.objects.db_manager(empresa_db).filter(
+                rfc_cliente=rfc_cliente, tipo=tipo
+            ).exists()
+            if exists:
+                messages.error(request, f'Ya existe una configuración para "{dict(ConfiguracionCorreo.TIPOS)[tipo]}".')
+            else:
+                config = form.save(commit=False)
+                config.rfc_cliente = rfc_cliente
+                config.save(using=empresa_db)
+                messages.success(request, 'Configuración creada correctamente.')
+                return redirect('fiel:config_correos')
+    else:
+        form = ConfiguracionCorreoForm()
+
+    return render(request, 'fiel/crear_config_correo.html', {'form': form})
+
+@cliente_required
+def eliminar_config_correo(request, config_id):
+    empresa_db = request.session.get('empresa_db')
+    rfc_cliente = request.session.get('user_rfc')
+    if not empresa_db or not rfc_cliente:
+        messages.error(request, 'No se pudo identificar al cliente.')
+        return redirect('cliente_dashboard')
+
+    try:
+        config = ConfiguracionCorreo.objects.db_manager(empresa_db).get(
+            pk=config_id, rfc_cliente=rfc_cliente
+        )
+        config.delete(using=empresa_db)
+        messages.success(request, 'Configuración eliminada.')
+    except ConfiguracionCorreo.DoesNotExist:
+        messages.error(request, 'Configuración no encontrada.')
+
+    return redirect('fiel:config_correos')
+
+
+
+@cliente_required
+def editar_config_correo(request, config_id):
+    empresa_db = request.session.get('empresa_db')
+    rfc_cliente = request.session.get('user_rfc')
+    if not empresa_db or not rfc_cliente:
+        messages.error(request, 'No se pudo identificar al cliente.')
+        return redirect('cliente_dashboard')
+
+    # Obtener la configuración con la base de datos correcta
+    try:
+        config = ConfiguracionCorreo.objects.db_manager(empresa_db).get(pk=config_id, rfc_cliente=rfc_cliente)
+    except ConfiguracionCorreo.DoesNotExist:
+        messages.error(request, 'Configuración no encontrada.')
+        return redirect('fiel:config_correos')
+
+    if request.method == 'POST':
+        form = ConfiguracionCorreoForm(request.POST, instance=config)
+        if form.is_valid():
+            nuevo_tipo = form.cleaned_data['tipo']
+            if nuevo_tipo != config.tipo:
+                exists = ConfiguracionCorreo.objects.db_manager(empresa_db).filter(
+                    rfc_cliente=rfc_cliente, tipo=nuevo_tipo
+                ).exclude(pk=config_id).exists()
+                if exists:
+                    messages.error(request, f'Ya existe una configuración para "{dict(ConfiguracionCorreo.TIPOS)[nuevo_tipo]}".')
+                    return render(request, 'fiel/editar_config_correo.html', {'form': form, 'config': config, 'tipos': ConfiguracionCorreo.TIPOS})
+
+            # Guardar con la base correcta
+            config_actualizado = form.save(commit=False)
+            config_actualizado.rfc_cliente = rfc_cliente
+            config_actualizado.save(using=empresa_db)
+            messages.success(request, 'Configuración actualizada correctamente.')
+            return redirect('fiel:config_correos')
+        else:
+            messages.error(request, 'Corrige los errores del formulario.')
+    else:
+        form = ConfiguracionCorreoForm(instance=config)
+
+    return render(request, 'fiel/editar_config_correo.html', {
+        'form': form,
+        'config': config,
+        'tipos': ConfiguracionCorreo.TIPOS
+    })

@@ -44,3 +44,19 @@ class CargaFiel(models.Model):
 
     def __str__(self):
         return f"{self.rfc_cliente} - {self.fecha_carga}"
+
+
+class ConfiguracionCorreo(models.Model):
+    TIPOS = (
+        ('opinion', 'Opiniones de Cumplimiento'),
+        ('constancia', 'Pedir Constancia'),
+    )
+    rfc_cliente = models.CharField(max_length=13)
+    tipo = models.CharField(max_length=20, choices=TIPOS)
+    titulo = models.CharField(max_length=200)
+    cuerpo = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'configuracion_correo'
+        unique_together = ('rfc_cliente', 'tipo')
