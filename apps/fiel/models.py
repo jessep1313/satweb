@@ -60,3 +60,4 @@ class ConfiguracionCorreo(models.Model):
     class Meta:
         db_table = 'configuracion_correo'
         unique_together = ('rfc_cliente', 'tipo')
+        

@@ -25,6 +25,8 @@ INSTALLED_APPS = [
     'apps.usuarios_empresa',
     'apps.usuarios_tenant',
     'apps.fiel',
+    'apps.cfdi',   # <-- Agregar
+
 ]
 
 MIDDLEWARE = [
@@ -100,3 +102,8 @@ DATABASE_ROUTERS = ['apps.core.routers.TenantRouter']
 
 # Al final del archivo, agregar:
 LOGIN_URL = '/'
+
+
+# Media files (uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
