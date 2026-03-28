@@ -26,6 +26,8 @@ INSTALLED_APPS = [
     'apps.usuarios_tenant',
     'apps.fiel',
     'apps.cfdi',   # <-- Agregar
+    'apps.proveedores',   # <-- Agregar
+    'apps.proveedores_sin_cfdi',   # <-- Agregar
 
 ]
 

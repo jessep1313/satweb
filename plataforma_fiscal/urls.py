@@ -9,6 +9,7 @@ urlpatterns = [
     path('fiel/', include('fiel.urls')),
     path('cfdi/', include('cfdi.urls')),
     path('proveedores/', include('proveedores.urls')),
+    path('proveedores-sin-cfdi/', include('proveedores_sin_cfdi.urls')),
 
 ]
 
