@@ -5,4 +5,6 @@ app_name = 'cfdi'
 
 urlpatterns = [
     path('peticion-sat/', views.peticion_sat, name='peticion_sat'),
+    path('recibidas/', views.recibidas, name='recibidas'),
+
 ]

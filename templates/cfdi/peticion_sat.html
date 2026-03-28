@@ -50,6 +50,7 @@
                     <th>Fecha final</th>
                     <th>Código estatus SAT</th>
                     <th>Mensaje</th>
+                    <th>Estado</th>
                     <th>Fecha creación</th>
                 </tr>
             </thead>
@@ -61,6 +62,15 @@
                     <td>{{ peticion.fechafinal|date:"d/m/Y" }}</td>
                     <td>{{ peticion.CodEstatus }}</td>
                     <td>{{ peticion.Mensaje }}</td>
+                    <td>
+                        {% if peticion.estatuspeticion == 0 %}
+                            <span class="badge bg-warning text-dark">En progreso</span>
+                        {% elif peticion.estatuspeticion == 1 %}
+                            <span class="badge bg-success">Terminada</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ peticion.get_estatuspeticion_display }}</span>
+                        {% endif %}
+                    </td>
                     <td>{{ peticion.created_at|date:"d/m/Y H:i" }}</td>
                 </tr>
                 {% empty %}

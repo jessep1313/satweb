@@ -6,41 +6,258 @@
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'cliente_dashboard' %}">Dashboard</a></li>
-<li class="breadcrumb-item active">CFDI Recibidas</li>
+<li class="breadcrumb-item active">Recibidas</li>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 {% endblock %}
 
 {% block content %}
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <h3 class="card-title">Filtro de fechas</h3>
+    </div>
+    <div class="card-body">
+        <form id="filtroForm" method="get" class="row g-3">
+            <div class="col-md-4">
+                {{ form.fecha_inicio.label_tag }}
+                {{ form.fecha_inicio }}
+            </div>
+            <div class="col-md-4">
+                {{ form.fecha_fin.label_tag }}
+                {{ form.fecha_fin }}
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+                <button type="button" id="btnLimpiar" class="btn btn-secondary">Limpiar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="resumen" class="row" style="display: none;">
+    <div class="col-md-12">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">Resumen</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Total de facturas:</strong> <span id="totalFacturas">0</span></p>
+                <p><strong>Suma total:</strong> $<span id="sumaTotal">0.00</span> MXN</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="graficos" class="row" style="display: none;">
+    <div class="col-md-12">
+        <div class="card card-success">
+            <div class="card-header">
+                <h3 class="card-title">Gráficos</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="chartCantidad" style="height: 300px;"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="chartMonto" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Listado de CFDI</h3>
     </div>
     <div class="card-body">
-        <table class="table table-bordered table-striped">
+        <table id="tablaCfdi" class="table table-bordered table-striped">
             <thead>
-                <tr>
+                脂
                     <th>UUID</th>
-                    <th>Emisor</th>
-                    <th>RFC Emisor</th>
                     <th>Fecha</th>
+                    <th>RFC Emisor</th>
+                    <th>RFC Receptor</th>
                     <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for cfdi in cfdis %}
-                <tr>
-                    <td>{{ cfdi.uuid }}</td>
-                    <td>{{ cfdi.nombre_emisor }}</td>
-                    <td>{{ cfdi.rfc_emisor }}</td>
-                    <td>{{ cfdi.fecha_emision|date:"d/m/Y H:i" }}</td>
-                    <td>${{ cfdi.total|floatformat:2 }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center">No hay CFDI registrados.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+                    <th>Moneda</th>
+                    <th>Forma de pago</th>
+                    <th>Método de pago</th>
+                    <th>Fecha timbrado</th>
+                    <th>Saldo pendiente</th>
+                </thead>
+            <tbody></tbody>
         </table>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    let dataTable = null;
+    let chartCantidad = null;
+    let chartMonto = null;
+
+    function cargarDatos(fecha_inicio, fecha_fin) {
+        console.log("Cargando datos con fechas:", fecha_inicio, fecha_fin);
+        $.ajax({
+            url: window.location.href,
+            data: {
+                'fecha_inicio': fecha_inicio,
+                'fecha_fin': fecha_fin
+            },
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+            success: function(response) {
+                console.log("Respuesta recibida:", response);
+                $('#totalFacturas').text(response.total);
+                // Después:
+                const montoFormateado = parseFloat(response.suma_total).toLocaleString('es-MX', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                $('#sumaTotal').text(montoFormateado);
+                $('#resumen').show();
+
+                const meses = response.meses;
+                const cantidades = response.cantidades;
+                const montos = response.montos;
+
+                console.log("meses:", meses);
+                console.log("cantidades:", cantidades);
+                console.log("montos:", montos);
+
+                alert(montos);
+
+                if (meses && meses.length > 0) {
+                    $('#graficos').show();
+
+                    // Destruir gráficos anteriores si existen
+                    if (chartCantidad) {
+                        chartCantidad.destroy();
+                        chartCantidad = null;
+                    }
+                    if (chartMonto) {
+                        chartMonto.destroy();
+                        chartMonto = null;
+                    }
+
+                    // Crear gráfico de cantidad
+                    const ctxCantidad = document.getElementById('chartCantidad').getContext('2d');
+                    chartCantidad = new Chart(ctxCantidad, {
+                        type: 'bar',
+                        data: {
+                            labels: meses,
+                            datasets: [{
+                                label: 'Cantidad de facturas',
+                                data: cantidades,
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { beginAtZero: true, title: { display: true, text: 'Cantidad' } },
+                                x: { title: { display: true, text: 'Mes' } }
+                            }
+                        }
+                    });
+
+                    // Crear gráfico de montos
+                    const ctxMonto = document.getElementById('chartMonto').getContext('2d');
+                    chartMonto = new Chart(ctxMonto, {
+                        type: 'line',
+                        data: {
+                            labels: meses,
+                            datasets: [{
+                                label: 'Monto total (MXN)',
+                                data: montos,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1,
+                                fill: true,
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { beginAtZero: true, title: { display: true, text: 'Monto (MXN)' } },
+                                x: { title: { display: true, text: 'Mes' } }
+                            }
+                        }
+                    });
+
+                    console.log("Gráficos creados correctamente");
+                } else {
+                    $('#graficos').hide();
+                    console.log("No hay datos para gráficos");
+                }
+
+                // Actualizar DataTable
+                if (dataTable) {
+                    dataTable.clear().destroy();
+                }
+                dataTable = $('#tablaCfdi').DataTable({
+                    data: response.data,
+                    columns: [
+                        { data: 0 }, { data: 1 }, { data: 2 }, { data: 3 },
+                        { data: 4 }, { data: 5 }, { data: 6 }, { data: 7 },
+                        { data: 8 }, { data: 9 }
+                    ],
+                    language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
+                    pageLength: 20,
+                    order: [[1, 'desc']]
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Error en AJAX:", status, error);
+                alert('Error al cargar los datos. Revisa la consola.');
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        dataTable = $('#tablaCfdi').DataTable({
+            data: [],
+            columns: [
+                { data: 0 }, { data: 1 }, { data: 2 }, { data: 3 },
+                { data: 4 }, { data: 5 }, { data: 6 }, { data: 7 },
+                { data: 8 }, { data: 9 }
+            ],
+            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
+            pageLength: 20,
+            order: [[1, 'desc']]
+        });
+
+        $('#filtroForm').on('submit', function(e) {
+            e.preventDefault();
+            const fecha_inicio = $('#id_fecha_inicio').val();
+            const fecha_fin = $('#id_fecha_fin').val();
+            cargarDatos(fecha_inicio, fecha_fin);
+        });
+
+        $('#btnLimpiar').on('click', function() {
+            $('#id_fecha_inicio').val('');
+            $('#id_fecha_fin').val('');
+            $('#resumen').hide();
+            $('#graficos').hide();
+            if (dataTable) dataTable.clear().draw();
+            if (chartCantidad) chartCantidad.destroy();
+            if (chartMonto) chartMonto.destroy();
+            chartCantidad = null;
+            chartMonto = null;
+        });
+    });
+</script>
 {% endblock %}
