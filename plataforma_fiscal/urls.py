@@ -8,6 +8,7 @@ urlpatterns = [
     path('', include('core.urls')),  # Ahora 'core' es accesible
     path('fiel/', include('fiel.urls')),
     path('cfdi/', include('cfdi.urls')),
+    path('proveedores/', include('proveedores.urls')),
 
 ]
 

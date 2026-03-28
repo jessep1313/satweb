@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Proveedores{% endblock %}
+{% block content_title %}Catálogo de Proveedores{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'cliente_dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item active">Proveedores</li>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">Listado de proveedores</h3>
+        <div>
+            <button type="button" id="btnExportar" class="btn btn-success btn-sm me-2">
+                <i class="bi bi-download"></i> Exportar CSV
+            </button>
+            <button type="button" id="btnImportar" class="btn btn-info btn-sm">
+                <i class="bi bi-upload"></i> Importar CSV
+            </button>
+            <input type="file" id="fileImport" style="display: none;" accept=".csv">
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="tablaProveedores" class="table table-bordered table-striped">
+            <thead>
+                 <tr>
+                    <th>ID</th>
+                   
+                    <th>Razón Social</th>
+                    <th>RFC</th>
+                    <th>Correo</th>
+                    <th>Correo2</th>
+                    <th>Correo3</th>
+                    <th>Acciones</th>
+                    </tr>
+                </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal para editar proveedor -->
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarLabel">Editar Proveedor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditar">
+                    <input type="hidden" id="edit_id" name="id">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Razón Social</label>
+                            <input type="text" id="edit_razon_social" class="form-control" readonly disabled>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">RFC</label>
+                            <input type="text" id="edit_rfc" class="form-control" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Correo</label>
+                            <input type="email" id="edit_correo" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Correo 2</label>
+                            <input type="email" id="edit_correo2" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Correo 3</label>
+                            <input type="email" id="edit_correo3" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo Proveedor</label>
+                        <input type="text" id="edit_tipo_proveedor" class="form-control">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Código Postal</label>
+                            <input type="text" id="edit_codigo_postal" class="form-control">
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Calle</label>
+                            <input type="text" id="edit_calle" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Número Interior</label>
+                            <input type="text" id="edit_no_int" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Número Exterior</label>
+                            <input type="text" id="edit_no_ext" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Colonia</label>
+                            <input type="text" id="edit_colonia" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Estado</label>
+                            <input type="text" id="edit_estado" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Municipio</label>
+                            <input type="text" id="edit_municipio" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Ciudad</label>
+                            <input type="text" id="edit_ciudad" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" id="edit_telefono" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnGuardar" class="btn btn-primary">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    let dataTable = null;
+
+    function cargarProveedores() {
+        $.ajax({
+            url: "{% url 'proveedores:data' %}",
+            method: "GET",
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+            success: function(data) {
+                if (dataTable) {
+                    dataTable.clear().destroy();
+                }
+                dataTable = $('#tablaProveedores').DataTable({
+                    data: data,
+                    columns: [
+                        { data: 'id' },
+                       
+                        { data: 'RazonSocial' },
+                        { data: 'RFC' },
+                        { data: 'Correo' },
+                        { data: 'Correo2' },
+                        { data: 'Correo3' },
+                        {
+                            data: null,
+                            render: function(row) {
+                                return '<button class="btn btn-sm btn-warning editar" data-id="' + row.id + '">' +
+                                       '<i class="bi bi-pencil"></i> Editar</button>';
+                            }
+                        }
+                    ],
+                    language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
+                    pageLength: 20,
+                    order: [[0, 'asc']]
+                });
+            },
+            error: function() {
+                alert('Error al cargar los proveedores');
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        cargarProveedores();
+
+        // Delegar eventos para botones de editar (cargados dinámicamente)
+        $('#tablaProveedores').on('click', '.editar', function() {
+            const id = $(this).data('id');
+            const row = dataTable.row($(this).closest('tr')).data();
+            if (row) {
+                $('#edit_id').val(row.id);
+                $('#edit_razon_social').val(row.RazonSocial);
+                $('#edit_rfc').val(row.RFC);
+                $('#edit_correo').val(row.Correo);
+                $('#edit_correo2').val(row.Correo2);
+                $('#edit_correo3').val(row.Correo3);
+                $('#edit_tipo_proveedor').val(row.tipoProveedor);
+                $('#edit_codigo_postal').val(row.codigoPostal);
+                $('#edit_calle').val(row.calle);
+                $('#edit_no_int').val(row.noInt);
+                $('#edit_no_ext').val(row.noExt);
+                $('#edit_colonia').val(row.colonia);
+                $('#edit_estado').val(row.estado);
+                $('#edit_municipio').val(row.municipio);
+                $('#edit_ciudad').val(row.ciudad);
+                $('#edit_telefono').val(row.telefono);
+                $('#modalEditar').modal('show');
+            }
+        });
+
+        $('#btnGuardar').click(function() {
+            const data = {
+                id: $('#edit_id').val(),
+                Correo: $('#edit_correo').val(),
+                Correo2: $('#edit_correo2').val(),
+                Correo3: $('#edit_correo3').val(),
+                tipoProveedor: $('#edit_tipo_proveedor').val(),
+                codigoPostal: $('#edit_codigo_postal').val(),
+                calle: $('#edit_calle').val(),
+                noInt: $('#edit_no_int').val(),
+                noExt: $('#edit_no_ext').val(),
+                colonia: $('#edit_colonia').val(),
+                estado: $('#edit_estado').val(),
+                municipio: $('#edit_municipio').val(),
+                ciudad: $('#edit_ciudad').val(),
+                telefono: $('#edit_telefono').val()
+            };
+            $.ajax({
+                url: "{% url 'proveedores:actualizar' %}",
+                method: "POST",
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    if (response.success) {
+                        $('#modalEditar').modal('hide');
+                        cargarProveedores(); // recargar tabla
+                    } else {
+                        alert('Error: ' + (response.error || 'Desconocido'));
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error al guardar: ' + xhr.responseText);
+                }
+            });
+        });
+
+        $('#btnExportar').click(function() {
+            window.location.href = "{% url 'proveedores:exportar' %}";
+        });
+
+        $('#btnImportar').click(function() {
+            $('#fileImport').click();
+        });
+
+        $('#fileImport').change(function() {
+            const file = this.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('file', file);
+            $.ajax({
+                url: "{% url 'proveedores:importar' %}",
+                method: "POST",
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        alert('Importación exitosa. ' + response.updated + ' registros actualizados.');
+                        cargarProveedores();
+                    } else {
+                        alert('Error: ' + response.error);
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error en la importación: ' + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
